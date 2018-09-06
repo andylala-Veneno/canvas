@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>stars</title>
+	<style>
+		body{
+			margin: 0;
+			background-color: #000;
+		}
+		canvas{
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="star"></canvas>
+	<script>
+		(function(){
+			var canvas = document.getElementById("star"),
+				star = canvas.getContext("2d"),
+				maxWidth = window.innerWidth,
+				maxHeight = window.innerHeight,
+				starsNum = 520,
+				starsArr = [],
+				lineRadius = 100,
+				lineRadius_ = 100;
+			function set(){
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+			}
+			set();
+			window.onresize = function(){
+				set();
+			}
+			var lineX = canvas.width / 2,
+				lineY = canvas.height / 2;
+			function Star(){}
+			Star.prototype = {
+				constructor : Star,
+				init : function(){
+					this.x = Math.random() * maxWidth;
+					this.y = Math.random() * maxHeight;
+					this.r = Math.random(),
+					this.vx = -.5 + Math.random();
+    				this.vy = -.5 + Math.random();;
+				},
+				draw : function(){
+					star.beginPath();
+					star.arc(this.x,this.y,this.r,0,Math.PI * 2);
+					star.fillStyle = "#fff";
+					star.fill();
+				},
+				move : function(){
+					if(this.y < 0 || this.y > maxHeight){
+				        this.vx = this.vx;
+				        this.vy = - this.vy;
+			        }
+			        else if(this.x < 0 || this.x > maxWidth){
+				        this.vx = - this.vx;
+				        this.vy = this.vy;
+			        }
+					this.x += this.vx;
+					this.y += this.vy;
+					this.draw();
+				}
+			}
+			function createStars(starsNumber){
+				for(var i = 0;i < starsNumber;i++){
+					var oStar = new Star();
+					starsArr.push(oStar);
+					oStar.init();
+					oStar.draw();
+				}
+			}
+			function starsMove(){
+				star.clearRect(0,0,canvas.width,canvas.height);
+				for(var item of starsArr){
+					item.move();
+				}
+				line(starsNum,lineRadius,lineRadius_);
+			}
+			function line(num,r1,r2){
+				for(var i = 0;i < num;i++){
+					for(var j = 0;j < num;j++){
+						star1 = starsArr[i];
+						star2 = starsArr[j];
+						if((star1.x - star2.x) < r1 && (star1.y - star2.y) < r1 && (star1.x - star2.x) > -r1 && (star1.y - star2.y) > -r1){
+							if((star1.x - lineX) < r2 && (star1.y - lineY) < r2 && (star1.x - lineX) > -r2 && (star1.y - lineY) > -r2){
+								star.beginPath();
+								star.moveTo(star1.x,star1.y);
+								star.lineTo(star2.x,star2.y);
+								star.strokeStyle = "#c644a3";
+								star.lineWidth = .1;
+								star.stroke();
+							}
+						}
+					}
+				}
+			}
+			createStars(starsNum);
+			setInterval(starsMove,1000/60);
+			window.onmousemove = function(e){
+				lineX = e.clientX;
+				lineY = e.clientY;
+			}
+		})();
+	</script>
+</body>
+</html>
